@@ -14,6 +14,8 @@ import {
 import { LoginSchema, LoginValidation } from "@/validation";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import axios from "axios";
+import { toast } from "sonner";
 
 const LoginForm = () => {
   //------ form validation
@@ -26,8 +28,19 @@ const LoginForm = () => {
   });
 
   //------ sending data to server
-  const onSubmit = (values: LoginValidation) => {
-    console.log(values);
+  const onSubmit = async (values: LoginValidation) => {
+    try {
+      const payload: LoginValidation = {
+        email: values.email,
+        password: values.password,
+      };
+      const { data } = await axios.post("/api/auth/login", payload);
+      // server response
+      return data as string;
+    } catch (error) {
+      // handling error
+      return toast.error("Something went wrong, please try again later.");
+    }
   };
   return (
     <CardWrapper

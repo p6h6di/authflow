@@ -14,6 +14,8 @@ import {
 import { RegisterSchema, RegisterValidation } from "@/validation";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import axios from "axios";
+import { toast } from "sonner";
 
 const RegisterForm = () => {
   //------ form validation
@@ -27,8 +29,19 @@ const RegisterForm = () => {
   });
 
   //------ sending data to server
-  const onSubmit = (values: RegisterValidation) => {
-    console.log(values);
+  const onSubmit = async (values: RegisterValidation) => {
+    try {
+      const payload: RegisterValidation = {
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      };
+      const { data } = await axios.post("/api/auth/register", payload);
+      return data as string;
+    } catch (error) {
+      // handling error
+      return toast.error("Could not create an account.");
+    }
   };
   return (
     <CardWrapper
