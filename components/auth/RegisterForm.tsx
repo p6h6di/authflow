@@ -11,14 +11,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { SignupSchema, SignupValidation } from "@/validation";
+import { RegisterSchema, RegisterValidation } from "@/validation";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
 const RegisterForm = () => {
   //------ form validation
-  const form = useForm<SignupValidation>({
-    resolver: zodResolver(SignupSchema),
+  const form = useForm<RegisterValidation>({
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -27,7 +27,7 @@ const RegisterForm = () => {
   });
 
   //------ sending data to server
-  const onSubmit = (values: SignupValidation) => {
+  const onSubmit = (values: RegisterValidation) => {
     console.log(values);
   };
   return (
@@ -94,7 +94,7 @@ const RegisterForm = () => {
               )}
             />
             <Button type="submit" className="w-full">
-              Login
+              Create an account
             </Button>
           </div>
         </form>
