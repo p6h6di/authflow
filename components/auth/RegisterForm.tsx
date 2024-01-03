@@ -14,8 +14,9 @@ import {
 import { RegisterSchema, RegisterValidation } from "@/validation";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
 
 const RegisterForm = () => {
   //------ form validation
@@ -29,19 +30,44 @@ const RegisterForm = () => {
   });
 
   //------ sending data to server
-  const onSubmit = async (values: RegisterValidation) => {
-    try {
+  const { mutate: register, isPending } = useMutation({
+    mutationFn: async ({ name, email, password }: RegisterValidation) => {
       const payload: RegisterValidation = {
-        name: values.name,
-        email: values.email,
-        password: values.password,
+        name,
+        email,
+        password,
       };
       const { data } = await axios.post("/api/auth/register", payload);
       return data as string;
-    } catch (error) {
-      // handling error
-      return toast.error("Could not create an account.");
-    }
+    },
+
+    //------ handling server error
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        if (err.response?.status === 409) {
+          return toast.error("User already exists.");
+        }
+        if (err.response?.status === 422) {
+          return toast.error("Every field is required.");
+        }
+      }
+      return toast.error("Could not create an account!");
+    },
+
+    //------ after the server response
+    onSuccess: () => {
+      return toast("User is created succesfully.");
+    },
+  });
+
+  //------ preparing data
+  const onSubmit = (values: RegisterValidation) => {
+    const payload: RegisterValidation = {
+      name: values.name,
+      email: values.email,
+      password: values.password,
+    };
+    register(payload);
   };
   return (
     <CardWrapper
@@ -58,6 +84,7 @@ const RegisterForm = () => {
             <FormField
               control={form.control}
               name="name"
+              disabled={isPending}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-muted-foreground text-sm">
@@ -74,6 +101,7 @@ const RegisterForm = () => {
             <FormField
               control={form.control}
               name="email"
+              disabled={isPending}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-muted-foreground text-sm">
@@ -94,6 +122,7 @@ const RegisterForm = () => {
             <FormField
               control={form.control}
               name="password"
+              disabled={isPending}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-muted-foreground text-sm">
@@ -106,7 +135,7 @@ const RegisterForm = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
+            <Button type="submit" isLoading={isPending} className="w-full">
               Create an account
             </Button>
           </div>
