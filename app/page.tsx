@@ -1,17 +1,23 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="flex items-center justify-center min-h-screen">
-      <div className="bg-white border-2 rounded-lg w-1/2">
+    <>
+      <div className="bg-white border-2 border-gray-100 rounded-lg shadow-sm w-1/2">
         <div className="p-8">
           <h1 className="text-4xl font-bold">Authentication</h1>
-          <p className="text-zinc-500 text-sm">
-            Its a demo Authentication project.
+          <p className="text-gray-700 text-sm">
+            Welcome to my demo Next.js Authentication Project, where seamless
+            user authentication meets the power of the React framework. This
+            project is meticulously designed to provide a secure, efficient, and
+            user-friendly authentication experience for your web application.
           </p>
-          <Button>Get started</Button>
+          <Link href="/auth/login" className={buttonVariants({ size: "lg" })}>
+            Get started
+          </Link>
         </div>
       </div>
-    </main>
+    </>
   );
 }
