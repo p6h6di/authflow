@@ -56,8 +56,8 @@ const RegisterForm = () => {
     },
 
     //------ after the server response
-    onSuccess: () => {
-      return toast("User is created succesfully.");
+    onSuccess: (data) => {
+      return toast(data);
     },
   });
 

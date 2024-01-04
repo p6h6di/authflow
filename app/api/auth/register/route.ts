@@ -1,3 +1,5 @@
+import { sendVerificationEmail } from "@/lib/mail";
+import { generateVerificationToken } from "@/lib/token";
 import { prisma } from "@/prisma/client";
 import { RegisterSchema } from "@/validation";
 import bcrypt from 'bcryptjs'
@@ -36,10 +38,18 @@ export async function POST(req: Request) {
         }
     })
 
-    // TODO: Sending verification token email
+    // generating verification token
+    const verificationToken = await generateVerificationToken(email)
+
+    // sending verification email
+    await sendVerificationEmail(
+        verificationToken.email,
+        verificationToken.token
+    );
+
 
     // sending response
-    return new Response('User created!')
+    return new Response('Confirmation email sent to your account!')
         
     } catch (error) {
         // if something went wrong!

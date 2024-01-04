@@ -57,10 +57,10 @@ const LoginForm = () => {
     },
 
     //------ after the server response
-    onSuccess: () => {
+    onSuccess: (data) => {
       router.refresh();
       router.push("/settings");
-      return toast("User is logged in succesfully.");
+      return toast.success(data);
     },
   });
 

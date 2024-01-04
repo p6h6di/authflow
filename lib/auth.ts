@@ -27,6 +27,21 @@ export const {
   },
   // access additional data from db
   callbacks: {
+    async signIn({user, account}) {
+      // Allow oAuth without email verification
+      if(account?.provider !== 'credentials') return true;
+
+      // blocking user without email verification
+      const existingUser = await prisma.user.findUnique({
+        where: {
+          id: user.id
+        }
+      })
+      if(!existingUser?.emailVerified) return false;
+       
+      // ADD 2FA CHECK
+      return true;
+    },
     async session({token, session}) {
       if(token.sub && session.user) {
         session.user.id = token.sub
