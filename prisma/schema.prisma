@@ -26,6 +26,11 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+enum UserRole {
+  ADMIN
+  USER
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -34,4 +39,6 @@ model User {
   image         String?
   password      String?
   accounts      Account[]
+
+  role UserRole @default(USER)
 }
