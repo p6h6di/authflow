@@ -1,6 +1,6 @@
 import { prisma } from "@/prisma/client";
 import { RegisterSchema } from "@/validation";
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import { z } from 'zod';
 
 /**

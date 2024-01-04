@@ -14,10 +14,13 @@ import {
 import { LoginSchema, LoginValidation } from "@/validation";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
+  const router = useRouter();
   //------ form validation
   const form = useForm<LoginValidation>({
     resolver: zodResolver(LoginSchema),
@@ -28,19 +31,38 @@ const LoginForm = () => {
   });
 
   //------ sending data to server
-  const onSubmit = async (values: LoginValidation) => {
-    try {
+  const { mutate: login, isPending } = useMutation({
+    mutationFn: async ({ email, password }: LoginValidation) => {
       const payload: LoginValidation = {
-        email: values.email,
-        password: values.password,
+        email,
+        password,
       };
       const { data } = await axios.post("/api/auth/login", payload);
-      // server response
       return data as string;
-    } catch (error) {
-      // handling error
-      return toast.error("Something went wrong, please try again later.");
-    }
+    },
+
+    //------ handling server error
+    onError: (data) => {
+      form.reset();
+      // FIX: ERROR HANDLING FROM SERVER
+      return toast.error(data.message);
+    },
+
+    //------ after the server response
+    onSuccess: () => {
+      router.refresh();
+      router.push("/settings");
+      return toast("User is logged in succesfully.");
+    },
+  });
+
+  //------ preparing data
+  const onSubmit = (values: LoginValidation) => {
+    const payload: LoginValidation = {
+      email: values.email,
+      password: values.password,
+    };
+    login(payload);
   };
   return (
     <CardWrapper
@@ -57,6 +79,7 @@ const LoginForm = () => {
             <FormField
               control={form.control}
               name="email"
+              disabled={isPending}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-muted-foreground text-sm">
@@ -77,6 +100,7 @@ const LoginForm = () => {
             <FormField
               control={form.control}
               name="password"
+              disabled={isPending}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-muted-foreground text-sm">
@@ -89,7 +113,7 @@ const LoginForm = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
+            <Button type="submit" isLoading={isPending} className="w-full">
               Login
             </Button>
           </div>

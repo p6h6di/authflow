@@ -43,6 +43,7 @@ const RegisterForm = () => {
 
     //------ handling server error
     onError: (err) => {
+      form.reset();
       if (err instanceof AxiosError) {
         if (err.response?.status === 409) {
           return toast.error("User already exists.");
