@@ -14,13 +14,15 @@ import {
 import { LoginSchema, LoginValidation } from "@/validation";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const LoginForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   //------ form validation
   const form = useForm<LoginValidation>({
     resolver: zodResolver(LoginSchema),
@@ -44,6 +46,12 @@ const LoginForm = () => {
     //------ handling server error
     onError: (data) => {
       form.reset();
+      // FIX: for socail accounts(toast message not working)
+      if (searchParams.get("error") === "OAuthAccountNotLinked") {
+        return toast.error(
+          "To confirm your identity, sign in with the same account you used originally."
+        );
+      }
       // FIX: ERROR HANDLING FROM SERVER
       return toast.error(data.message);
     },

@@ -11,6 +11,21 @@ export const {
   signIn,
   signOut
 } = NextAuth({
+  // redirect routes if something happen
+  pages: {
+    signIn: '/auth/login',
+    error: '/auth/error'
+  },
+  // verifing email for social accounts
+  events: {
+    async linkAccount({user}) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { emailVerified: new Date() }
+      })
+    }
+  },
+  // access additional data from db
   callbacks: {
     async session({token, session}) {
       if(token.sub && session.user) {
