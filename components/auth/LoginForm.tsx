@@ -13,11 +13,12 @@ import {
 } from "@/components/ui/form";
 import { LoginSchema, LoginValidation } from "@/validation";
 import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import axios from "axios";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -82,7 +83,7 @@ const LoginForm = () => {
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="my-6">
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* EMAIL_INPUT_FIELD */}
             <FormField
               control={form.control}
@@ -121,6 +122,16 @@ const LoginForm = () => {
                 </FormItem>
               )}
             />
+            <Link
+              href="/auth/reset"
+              className={buttonVariants({
+                variant: "link",
+                size: "sm",
+                className: "font-normal text-xs text-end",
+              })}
+            >
+              Forget password?
+            </Link>
             <Button type="submit" isLoading={isPending} className="w-full">
               Login
             </Button>
